@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tracking App</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+    }
+    .announcement-bar {
+        background-color: #FF914D;
+        color: #fff;
+        padding: 10px;
+        text-align: center;
+      
+    }
+    .form-container {
+        background-color: #f4f4f4;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .form-container label {
+        display: block;
+        margin-bottom: 10px;
+    }
+    .form-container input[type="text"],
+    .form-container input[type="email"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        font-size: 16px;
+    }
+    .form-container button {
+        padding: 10px 20px;
+        background-color: #FF914D;
+        color: #fff;
+        border: none;
+        border-radius: 0px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    .form-container button:hover {
+        background-color: #FF914D;
+    }
+    .result {
+        margin-top: 20px;
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 0px;
+    }
+    .result p {
+        margin: 0;
+    }
+    .footer {
+        margin-top: 20px;
+        text-align: center;
+    }
+    .menu {
+	    text-align: center;
+
+
+
+</style>
+</head>
+<body>
+
+<div class="announcement-bar">
+    <p>Latest updates: We've added new features! Check them out.</p>
+</div>
+
+
+<div class="container">
+    <img src="https://i.ibb.co/rHFbqwB/Trackitbro.png" alt="Trackitbro" border="0" width="200"><br>
+
+    <div class="form-container">
+        <form id="trackingForm">
+            <label for="trackingNumber">Tracking Number:</label>
+            <input type="text" id="trackingNumber" placeholder="Enter your tracking number">
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Enter your email">
+
+            <button type="submit">Track</button>
+        </form>
+    </div>
+
+    <div class="result" id="result" style="display:none;">
+        <!-- Tracking results will be displayed here -->
+    </div>
+</div>
+
+<div class="footer">
+    <p>&copy; 2024 Trackitbro by Pearl. All rights reserved.</p>
+</div>
+
+<script>
+    document.getElementById('trackingForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var trackingNumber = document.getElementById('trackingNumber').value;
+        var email = document.getElementById('email').value;
+
+        fetchTrackingInfo(trackingNumber, email);
+    });
+
+    function fetchTrackingInfo(trackingNumber, email) {
+        var apiUrl = `/api/order/${trackingNumber}`;
+
+        fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch tracking information. Status: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            displayTrackingResults(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            var resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Error: ' + error.message + '</p>';
+            resultDiv.style.display = 'block';
+        });
+    }
+
+    function displayTrackingResults(data) {
+        var resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = '';
+        resultDiv.style.display = 'block';
+
+        if (data.status) {
+            var trackingHTML = '<p><strong>Status:</strong> ' + data.status + '</p>' +
+                               '<p><strong>Estimated Delivery:</strong> ' + data.estimatedDelivery + '</p>';
+            resultDiv.innerHTML = trackingHTML;
+        } else {
+            resultDiv.innerHTML = '<p>Error: ' + data.error + '</p>';
+        }
+    }
+</script>
+
+</body>
+</html>
+
